@@ -25,6 +25,9 @@ namespace BeeIT.QRCoder
     /// <seealso cref="QrCode.EncodeText(string, QrCode.Ecc)"/>
     /// <seealso cref="QrCode.EncodeBinary(byte[], QrCode.Ecc)"/>
     /// <seealso cref="QrCode.EncodeSegments(List{QrSegment}, QrCode.Ecc, int, int, int, bool)"/>
+    /// <seealso cref="QrCode.GenerateQrCode(string)"/>
+    /// <seealso cref="QrCode.GenerateQrCode(string, string, int, int)"/>
+    /// <seealso cref="QrCode.GenerateQrCodeWithImage(string, string, string, int, int)"/>
     /// <seealso cref="QrSegmentAdvanced.MakeSegmentsOptimally(string, QrCode.Ecc, int, int)"/>
     public class DataTooLongException : ArgumentException
     {
