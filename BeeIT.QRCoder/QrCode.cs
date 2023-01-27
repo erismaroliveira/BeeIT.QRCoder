@@ -334,13 +334,20 @@ namespace BeeIT.QRCoder
         /// <exception cref="ArgumentNullException"><paramref name="text"/> is <c>null</c>.</exception>
         /// <exception cref="DataTooLongException">The text is too long to fit in the largest QR code size (version)
         /// at the specified error correction level.</exception>
-        public string Generate(string text)
+        public string Generate(string text, string fileName)
         {
             Objects.RequireNonNull(text);
-            var filename = "qrcode.png";
+            var filename = fileName;
             var qr = EncodeText(text, Ecc.Medium);
             qr.SaveAsPng(filename, scale: 10, border: 4);
             return filename;
+        }
+
+        public byte[] Generate(string text)
+        {
+            Objects.RequireNonNull(text);
+            var qr = EncodeText(text, Ecc.Medium);
+            return qr.ToPng(scale: 10, border: 4);
         }
 
         /// <summary>
