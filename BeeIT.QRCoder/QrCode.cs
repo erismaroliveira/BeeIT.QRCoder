@@ -2,7 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Text;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
 
 namespace BeeIT.QRCoder
 {
@@ -41,6 +44,95 @@ namespace BeeIT.QRCoder
     public class QrCode
     {
         #region Static factory functions (high level)
+
+        /// <summary>
+        /// Creates a QR code using the ImageSharp package.
+        /// <para>
+        /// This function encodes user-defined text using the parameter that is required. (version).
+        /// </para>
+        /// </summary>
+        /// <param name="text">The text to be encoded. The full range of Unicode characters may be used.</param>
+        /// <returns>The created QR code instance representing the specified text.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="text"/> is <c>null</c>.</exception>
+        /// <exception cref="DataTooLongException">The text is too long to fit in the largest QR code size (version)
+        /// at the specified error correction level.</exception>
+        public static QrCode GenerateQrCode(string text)
+        {
+            Objects.RequireNonNull(text);
+            var filename = "qrcode.png";
+            var qr = EncodeText(text, Ecc.Medium);
+            qr.SaveAsPng(filename, scale: 10, border: 4);
+            return qr;
+        }
+
+        /// <summary>
+        /// Creates a QR code using the ImageSharp package.
+        /// <para>
+        /// This function encodes data in user-defined mode using parameters that are required. (version).
+        /// </para>
+        /// </summary>
+        /// <param name="text">The text to be encoded. The full range of Unicode characters may be used.</param>
+        /// <param name="fileName">The name of the file to be used.</param>
+        /// <param name="scale">The size of the image to be generated.</param>
+        /// <param name="border">The width of the image borders.</param>
+        /// <returns>The created QR code instance representing the specified text.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="text"/> or <paramref name="fileName"/> or <paramref name="scale"/> or <paramref name="border"/> is <c>null</c>.</exception>
+        /// <exception cref="DataTooLongException">The text is too long to fit in the largest QR code size (version)
+        /// at the specified error correction level.</exception>
+        public static QrCode GenerateQrCode(string text, string fileName, int scale, int border)
+        {
+            Objects.RequireNonNull(text);
+            Objects.RequireNonNull(fileName);
+            Objects.RequireNonNull(scale);
+            Objects.RequireNonNull(border);
+            var filename = fileName;
+            var qr = EncodeText(text, Ecc.Medium);
+            qr.SaveAsPng(filename, scale: scale, border: border);
+            return qr;
+        }
+
+        /// <summary>
+        /// Creates a QR code using the ImageSharp package with an image centered in the middle.
+        /// <para>
+        /// This function encodes data in user-defined mode using parameters that are required. (version).
+        /// </para>
+        /// </summary>
+        /// <param name="text">The text to be encoded. The full range of Unicode characters may be used.</param>
+        /// <param name="fileName">The name of the file to be used.</param>
+        /// <param name="logoFileName">The path of the image to be added.</param>
+        /// <param name="scale">The size of the image to be generated.</param>
+        /// <param name="border">The width of the image borders.</param>
+        /// <returns>The created QR code instance representing the specified text.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="text"/> or <paramref name="fileName"/> or <paramref name="logoFileName"/> or <paramref name="scale"/> or <paramref name="border"/> is <c>null</c>.</exception>
+        /// <exception cref="DataTooLongException">The text is too long to fit in the largest QR code size (version)
+        /// at the specified error correction level.</exception>
+        public static QrCode GenerateQrCodeWithImage(string text, string fileName, string logoFileName, int scale, int border)
+        {
+            Objects.RequireNonNull(text);
+            Objects.RequireNonNull(fileName);
+            Objects.RequireNonNull(logoFileName);
+            Objects.RequireNonNull(scale);
+            Objects.RequireNonNull(border);
+            var filename = fileName;
+            var logoFilename = Path.GetFullPath(logoFileName);
+            const float logoWidth = 0.15f;
+            var qr = EncodeText(text, Ecc.Medium);
+            using (var bitmap = qr.ToBitmap(scale: scale, border: border))
+            using (var logo = Image.Load(logoFilename))
+            {
+                // resize logo
+                var w = (int)Math.Round(bitmap.Width * logoWidth);
+                logo.Mutate(logo => logo.Resize(w, 0));
+
+                // draw logo in center
+                var topLeft = new Point((bitmap.Width - logo.Width) / 2, (bitmap.Height - logo.Height) / 2);
+                bitmap.Mutate(img => img.DrawImage(logo, topLeft, 1));
+
+                // save as PNG
+                bitmap.SaveAsPng(filename);
+            }
+            return qr;
+        }
 
         /// <summary>
         /// Creates a QR code representing the specified text using the specified error correction level.
@@ -267,7 +359,7 @@ namespace BeeIT.QRCoder
         #endregion
 
 
-        #region  Constructor (low level)
+        #region Constructor (low level)
 
         /// <summary>
         /// Constructs a QR code with the specified version number,
