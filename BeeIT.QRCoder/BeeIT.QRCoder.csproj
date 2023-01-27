@@ -5,7 +5,7 @@
 
     <PackageId>BeeIT.QRCoder</PackageId>
     <Title>BeeIT.QRCoder</Title>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <License>MIT</License>
     <Authors>Erismar Oliveira</Authors>
     <Product>QR Code Generator for .NET</Product>
@@ -19,7 +19,7 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>logo.png</PackageIcon>
     <PackageTags>qr code, qrcode generator, png, svg</PackageTags>
-    <PackageVersion>1.0.1</PackageVersion>
+    <PackageVersion>1.0.2</PackageVersion>
     <Company>BeeIT</Company>
     <Summary>QR Code Generator for .NET</Summary>
   </PropertyGroup>
